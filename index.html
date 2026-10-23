@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Healthcare Agentic Transformation Accelerator</title>
+<meta name="description" content="A working reference accelerator for agentic AI transformation in healthcare, mapped to the Google Cloud stack: Vertex AI, Gemini, Cloud Healthcare API, BigQuery, and Looker. Patterns are workflow and administrative, with clinician oversight throughout. Built by Greg Lucas as an independent portfolio artifact.">
+<style>
+  :root{--ink:#101418;--muted:#5a6672;--line:#dde3ea;--bg:#f6f8fb;--blue:#1a73e8;--blue-dark:#174ea6;--teal:#188038;--card:#ffffff;--good:#107c10;--warn:#986f0b;--bad:#a4262c}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Google Sans",Roboto,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  .wrap{max-width:920px;margin:0 auto;padding:32px 20px 64px}
+  header.hero{background:linear-gradient(135deg,#0b2a5b,#1a73e8);color:#fff;border-radius:16px;padding:36px 32px;margin-bottom:24px}
+  header.hero h1{margin:0 0 8px;font-size:2rem;line-height:1.15}
+  header.hero p{margin:0;opacity:.94;max-width:680px}
+  header.hero .byline{margin-top:14px;font-size:.9rem;opacity:.85}
+  header.hero .pill{display:inline-block;margin-top:14px;border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:4px 12px;font-size:.82rem;opacity:.95}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:20px}
+  h2{margin:0 0 10px;font-size:1.25rem}
+  h3{margin:18px 0 6px;font-size:1.05rem}
+  p.lede{color:var(--muted);margin:0 0 8px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:14px}
+  .pattern{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fbfcfe}
+  .pattern h3{margin:0 0 6px;color:var(--blue-dark)}
+  .pattern p{margin:0 0 8px;font-size:.95rem}
+  .pattern .outcome{font-weight:650;color:var(--teal)}
+  table{border-collapse:collapse;width:100%;margin-top:10px;font-size:.92rem}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:#eef4fa;color:var(--blue-dark)}
+  .stack{font-size:.88rem;color:var(--muted)}
+  .stack b{color:var(--ink)}
+  .dims{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+  .dim-chip{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fbfcfe}
+  .dim-chip b{display:block;color:var(--blue-dark)}
+  .dim-chip span{font-size:.85rem;color:var(--muted)}
+  fieldset{border:1px solid var(--line);border-radius:12px;padding:16px;margin:0 0 16px}
+  fieldset.missing{border-color:var(--bad);background:#fdf3f2}
+  legend{font-weight:700;padding:0 6px;color:var(--blue-dark)}
+  .q{margin:14px 0}
+  .q p{margin:0 0 8px;font-weight:550}
+  .opts{display:flex;flex-wrap:wrap;gap:8px}
+  .opts label{border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:.9rem;background:#fff}
+  .opts input{margin-right:6px;accent-color:var(--blue)}
+  .opts label:has(input:checked){border-color:var(--blue);background:#e5f1fa;font-weight:600}
+  button{appearance:none;border:0;border-radius:10px;background:var(--blue);color:#fff;font-size:1rem;font-weight:650;padding:13px 22px;cursor:pointer}
+  button:hover{background:var(--blue-dark)}
+  button.secondary{background:#fff;color:var(--blue-dark);border:1px solid var(--blue)}
+  .error{display:none;color:var(--bad);font-weight:600;margin-top:12px}
+  #results{display:none}
+  .score-head{display:flex;flex-wrap:wrap;gap:20px;align-items:center}
+  .score-big{font-size:3.2rem;font-weight:800;line-height:1;color:var(--blue-dark)}
+  .stage-badge{display:inline-block;background:#e5f1fa;color:var(--blue-dark);border-radius:999px;padding:4px 14px;font-weight:700}
+  .bar-row{display:grid;grid-template-columns:150px 1fr 44px;gap:10px;align-items:center;margin:8px 0}
+  .bar{height:12px;background:#edf1f6;border-radius:6px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--blue)}
+  ul.plan{margin:6px 0 0;padding-left:20px}
+  ul.plan li{margin:5px 0}
+  .status{font-weight:700}
+  .status.ok{color:var(--good)} .status.partial{color:var(--warn)} .status.missing{color:var(--bad)}
+  .actions-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  footer{color:var(--muted);font-size:.9rem;text-align:center;margin-top:28px}
+  a{color:var(--blue-dark)}
+  @media (max-width:560px){ .bar-row{grid-template-columns:110px 1fr 40px} header.hero{padding:26px 20px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>Healthcare Agentic Transformation Accelerator</h1>
+    <p>Health systems do not lack AI demos. They lack agents that survive clinical governance, privacy review, and a Tuesday morning clinic rush. This accelerator packages the patterns, the readiness assessment, and the governance pack a health system needs to move agents into production on Google Cloud, with clinicians in charge at every consequential step.</p>
+    <p class="byline">A working reference artifact by Greg Lucas, founder of AIccountable and creator of agentlint. Every pattern here is workflow and administrative support with licensed clinicians making the clinical decisions. Nothing on this page diagnoses, treats, or advises patients.</p>
+    <span class="pill">Independent portfolio project. Not affiliated with or endorsed by Google.</span>
+  </header>
+
+  <section class="card">
+    <h2>Why healthcare, why now</h2>
+    <p class="lede">Healthcare runs on documentation, authorization, and scarce clinician time. Nurses and physicians spend hours feeding the record instead of treating patients, and prior authorization queues stall care that is already ordered. Agentic AI can give that time back, but only inside tight boundaries: protected health information stays governed, outputs are drafts until a clinician signs, and every action is logged for review.</p>
+    <p class="lede">This site runs that play in the open. Four patterns are mapped service by service to Google Cloud: Vertex AI and Gemini for reasoning, the Cloud Healthcare API for FHIR native data, BigQuery for the governed data foundation, and Google grade security controls around all of it. An interactive assessment scores your health system across the Identify to Prove arc and returns a staged roadmap. A governance section maps agentlint style checks to the HIPAA control set.</p>
+  </section>
+
+  <section class="card">
+    <h2>A hard boundary, stated plainly</h2>
+    <p class="lede">The patterns in this accelerator are administrative and workflow patterns: documentation drafting, authorization paperwork, intake logistics, and matching support. They are not medical advice systems. No pattern here interprets symptoms for a patient, recommends a treatment, or replaces clinician judgment. Where an output could influence care, the design requires a licensed clinician to review and sign before anything reaches a patient or a record of care.</p>
+  </section>
+
+  <section class="card">
+    <h2>Four transformation patterns</h2>
+    <p class="lede">Each pattern names the business outcome, the agent design, and the Google Cloud services it runs on. Every pattern ships with the same governance spine: Cloud Healthcare API FHIR stores as the clinical data layer, Cloud DLP inspection for protected health information, VPC Service Controls around the data perimeter, and complete audit logging.</p>
+    <div class="grid">
+
+      <div class="pattern">
+        <h3>1. Clinical Documentation Copilot</h3>
+        <p>Ambient and dictation based drafting for encounters: the copilot assembles a structured note draft from the visit audio, the chart context, and clinician prompts, then presents it for edit and signature. The physician authors the note. The copilot does the typing.</p>
+        <p class="outcome">Outcome: note drafting time cut sharply, after hours charting reduced, and every note carries a named clinician signature.</p>
+        <p class="stack"><b>Stack:</b> Vertex AI with Gemini multimodal models for transcription and drafting, healthcare tuned models from the MedLM family via Vertex AI Model Garden where appropriate, Cloud Healthcare API FHIR stores for chart context, Vertex AI Search over approved clinical references, Cloud DLP to flag stray identifiers in drafts, BigQuery for documentation quality analytics, Workload Identity and VPC Service Controls for the security perimeter.</p>
+      </div>
+
+      <div class="pattern">
+        <h3>2. Prior Authorization Agent</h3>
+        <p>The agent assembles the authorization packet: it pulls the order, the clinical evidence from the chart, and the payer policy criteria, then drafts the justification with citations to the source documents. A utilization review nurse verifies and submits. Denials return routed, with the missing evidence identified.</p>
+        <p class="outcome">Outcome: authorization cycle time from days to hours, fewer avoidable denials, and reviewers work from complete packets instead of chasing faxes.</p>
+        <p class="stack"><b>Stack:</b> Vertex AI Agent Builder for the case workflow, Gemini for evidence extraction and drafting, Cloud Healthcare API for FHIR data access, Vertex AI Search over payer policy libraries, BigQuery for denial pattern analytics, Cloud DLP for PHI minimization in outbound packets, Cloud Audit Logs for every access.</p>
+      </div>
+
+      <div class="pattern">
+        <h3>3. Patient Intake and Triage Support Assistant</h3>
+        <p>Pre visit intake handled before the appointment: forms, insurance verification, medication list prompts, and visit reason captured in structured form. For symptom related messages, the assistant only routes to the right clinical queue with urgency flags set by approved protocol. It never assesses or advises the patient.</p>
+        <p class="outcome">Outcome: front desk and nursing staff start the day with complete charts, no shows drop as reminders and preparation land earlier, and urgent messages reach clinicians faster.</p>
+        <p class="stack"><b>Stack:</b> Vertex AI Agent Builder for the intake conversation, Gemini for form understanding, Cloud Healthcare API for FHIR based chart updates, Pub/Sub and Cloud Functions for reminder workflows, Looker for operations dashboards, Cloud DLP and VPC Service Controls for PHI protection.</p>
+      </div>
+
+      <div class="pattern">
+        <h3>4. Clinical Trial Matching Assistant</h3>
+        <p>The assistant scans eligibility criteria across open trials and matches them against de identified cohort queries, then produces candidate lists with the evidence for each criterion for a research coordinator to review. Coordinators make every contact decision. Patients are never contacted by the agent.</p>
+        <p class="outcome">Outcome: screening that took weeks of chart review happens in days, coordinators review evidence instead of hunting charts, and enrollment reporting improves.</p>
+        <p class="stack"><b>Stack:</b> Vertex AI Search over trial registries and protocols, Gemini for criteria reasoning, Cloud Healthcare API FHIR stores with de identification pipelines, BigQuery for cohort analytics, Looker for enrollment reporting, Cloud DLP de identification as a required pipeline step.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>The Identify to Prove arc, adapted to healthcare</h2>
+    <p class="lede">The assessment scores five stages of the transformation arc Greg Lucas uses at AIccountable, translated into health system language.</p>
+    <div class="dims">
+      <div class="dim-chip"><b>Identify</b><span>Use case census, value cases, clinical risk tiering</span></div>
+      <div class="dim-chip"><b>Train</b><span>Clinician and staff readiness, human sign off culture</span></div>
+      <div class="dim-chip"><b>Design</b><span>FHIR data foundation, agent charters, PHI boundaries</span></div>
+      <div class="dim-chip"><b>Implement</b><span>Pilots behind clinical approval gates</span></div>
+      <div class="dim-chip"><b>Prove</b><span>Audit evidence, safety monitoring, measured outcomes</span></div>
+    </div>
+  </section>
+
+  <form id="assessment" class="card" novalidate>
+    <h2>Agentic readiness assessment</h2>
+    <p class="lede">Fifteen questions, about three minutes. Answer for your health system today, not the target state. Scale for every question: Not started (0), Ad hoc (1), In progress (2), Mostly in place (3), In place and measured (4).</p>
+    <div id="questions"></div>
+    <button type="submit">Score our readiness</button>
+    <p class="error" id="formError"></p>
+  </form>
+
+  <section id="results" class="card" aria-live="polite">
+    <h2>Your transformation roadmap</h2>
+    <div class="score-head">
+      <div><div class="score-big" id="overallScore">0</div><div class="lede">Overall readiness, out of 100</div></div>
+      <div><span class="stage-badge" id="stageBadge">Stage 1</span><p class="lede" id="stageBlurb" style="margin-top:8px;max-width:440px"></p></div>
+    </div>
+    <h3>Stage scores</h3>
+    <div id="dimBars"></div>
+    <h3>Do first: your priority moves</h3>
+    <ul class="plan" id="priorityPlan"></ul>
+    <h3>Your staged roadmap</h3>
+    <ul class="plan" id="roadmap"></ul>
+    <h3>Governance checks</h3>
+    <ul class="plan" id="govChecks"></ul>
+    <h3>Delivery engineering handoff pack</h3>
+    <ul class="plan" id="fdePack"></ul>
+    <div class="actions-row">
+      <button type="button" id="copyPlan">Copy roadmap as text</button>
+      <button type="button" class="secondary" id="retake">Retake the assessment</button>
+    </div>
+    <p class="lede" id="copyNote" style="margin-top:10px"></p>
+  </section>
+
+  <section class="card">
+    <h2>Governance first: agentlint checks mapped to the HIPAA control set</h2>
+    <p class="lede">Greg Lucas built agentlint, an open source linter that scores an agent configuration for governance risk before launch. In a health system, each check lands on a control the organization already owes under HIPAA and its own patient safety program. This mapping is the Prove stage made concrete.</p>
+    <table>
+      <tr><th>agentlint style check</th><th>What it catches</th><th>HIPAA and patient safety control it satisfies</th><th>Google Cloud tooling</th></tr>
+      <tr><td>Named human owner on every agent</td><td>Orphaned agents nobody is accountable for</td><td>Accountability for systems that touch protected health information, aligned to the HIPAA Security Rule administrative safeguards and the organization AI inventory</td><td>Agent registry practices on Vertex AI, ownership attested in project structure and Cloud Audit Logs</td></tr>
+      <tr><td>No wildcard tool access</td><td>Agents that can reach any system or API by default</td><td>Minimum necessary access and least privilege under the HIPAA Privacy and Security Rules</td><td>Cloud IAM with Workload Identity, per agent service accounts, VPC Service Controls perimeters</td></tr>
+      <tr><td>Approval gates on consequential actions</td><td>Decisions, messages, or transactions sent without a human where a human must stay in charge</td><td>Human oversight of outputs that enter the record of care or reach a patient: the clinical sign off control</td><td>Vertex AI Agent Builder human in the loop steps, EHR inbox review queues</td></tr>
+      <tr><td>No secrets or credentials in prompts</td><td>API keys, passwords, and tokens pasted into agent instructions</td><td>Protection of credentials and PHI in prompts, aligned to safeguards against unauthorized disclosure</td><td>Secret Manager for credentials, Cloud DLP inspection on prompts and outputs</td></tr>
+      <tr><td>Full interaction logging</td><td>Conversations and tool calls that leave no record</td><td>Audit controls under the HIPAA Security Rule: who accessed what PHI, when, through which agent</td><td>Cloud Audit Logs, Cloud Healthcare API audit trails, BigQuery log analytics</td></tr>
+      <tr><td>Data source allow list</td><td>Agents reading data outside approved repositories</td><td>Data governance and minimum necessary use, with de identification where the use allows it</td><td>Cloud DLP de identification, Cloud Healthcare API FHIR stores, BigQuery authorized views</td></tr>
+      <tr><td>Kill switch and rollback</td><td>No fast way to stop a misbehaving agent in production</td><td>Incident response and contingency planning under the HIPAA Security Rule</td><td>Agent deployment controls on Vertex AI, Security Command Center alerts, tested rollback runbooks</td></tr>
+      <tr><td>Evaluation before and after launch</td><td>Agents shipped on demo impressions instead of measured quality</td><td>Ongoing evaluation of safeguards and model quality, the HIPAA expectation that security measures are reviewed and adjusted</td><td>Vertex AI model evaluation and monitoring, Looker safety dashboards</td></tr>
+    </table>
+    <p class="lede" style="margin-top:12px">The pattern through every row: the safety and privacy evidence is produced by the platform as the agent runs, not assembled afterward for a survey. That is what moves a pilot past a clinical governance board.</p>
+  </section>
+
+  <section class="card">
+    <h2>The first 90 days, the way a clinical transformation team would run it</h2>
+    <ul class="plan">
+      <li><b>Days 1 to 30, Identify and charter:</b> run the use case census with clinical, privacy, compliance, and operations leaders in one room. Tier every candidate by value and clinical risk. Pick one administrative pattern, documentation or prior authorization, write its charter, and get clinical governance signature before any build starts.</li>
+      <li><b>Days 31 to 60, Design and prove the data:</b> stand up the Healthcare API FHIR access and BigQuery data products the pattern needs, with Cloud DLP inspection in the path. Build the proof of concept on Vertex AI with clinical evaluation gates. Train the first cohort of clinicians on reviewing and signing agent drafts.</li>
+      <li><b>Days 61 to 90, Implement and measure:</b> run a bounded pilot in one service line with human signature on every consequential output and full logging. Package the pattern, charter, evaluation results, and runbook as the handoff pack, and report Prove metrics, time returned to clinicians and safety events, to the governance body.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Healthcare Agentic Transformation Accelerator is an independent portfolio artifact by
+    <a href="https://www.linkedin.com/in/greg-lucas-28765b416/">Greg Lucas</a>
+    (pAIgeBreaker, AIccountable), creator of
+    <a href="https://github.com/THFC-COYS/agentlint">agentlint</a>,
+    <a href="https://business-agent-readiness.vercel.app">Business Agent Readiness</a>, and
+    <a href="https://courseagent-studio.vercel.app">CourseAgent Studio</a>.
+    Part of the <a href="https://agent-accelerator-atlas.vercel.app">Industry Agent Accelerator Atlas</a>.
+    Google Cloud, Vertex AI, Gemini, BigQuery, Looker, and MedLM are trademarks of Google LLC. Product names are used nominatively to describe platform mappings. This project is not affiliated with, sponsored by, or endorsed by Google. MIT licensed.
+  </footer>
+</div>
+
+<script>
+"use strict";
+var SCALE=[{v:0,label:"Not started"},{v:1,label:"Ad hoc"},{v:2,label:"In progress"},{v:3,label:"Mostly in place"},{v:4,label:"In place and measured"}];
+var DIMENSIONS=[{"id":"identify","name":"Identify","focus":"Use case census, value cases, clinical risk tiering","questions":["You have a written census of AI use cases across the health system, each with a named clinical or operational owner and an estimated value case.","Every candidate use case is risk tiered, with anything that can influence care (documentation entering the record, triage routing, authorization content) separated from low risk administrative uses.","Clinical leadership, privacy, and compliance reviewed the census before any pilot was chosen, not after it was built."]},{"id":"train","name":"Train","focus":"Clinician and staff readiness, human sign off culture","questions":["Clinicians and staff have role based training on what agents do, what they must never do, and the exact point where a licensed human reviews and signs.","Clinical and operational leaders can explain the agent strategy, its limits, and its safety governance in plain language to staff and to surveyors.","Frontline clinicians and staff helped design the workflows they will run with agents, and their hardest cases are in the pilot test set."]},{"id":"design","name":"Design","focus":"FHIR data foundation, agent charters, PHI boundaries","questions":["The data an agent needs lives in governed stores, for example Cloud Healthcare API FHIR resources and BigQuery datasets, with lineage, de identification options, and retention applied.","Every planned agent has a written charter: owner, allowed actions, approval gates, data sources, and a kill switch, before development starts.","Agents access systems with their own scoped identities and minimum necessary permissions, never with shared or personal clinician credentials."]},{"id":"implement","name":"Implement","focus":"Pilots behind clinical approval gates","questions":["Pilots run on a managed platform such as Vertex AI, with evaluation gates, including clinical accuracy review, before any clinician or patient exposure.","Consequential outputs (notes entering the record, authorization submissions, patient facing messages) sit behind licensed human review and signature in the workflow, not in a policy document only.","Each pilot produces a reusable pattern pack: architecture, charter, evaluation results, and runbook that another service line can deploy again."]},{"id":"prove","name":"Prove","focus":"Audit evidence, safety monitoring, measured outcomes","questions":["Every production agent interaction is logged with its inputs and outputs, retained to the health system records standard, and a reviewer can reconstruct any drafted document.","Agent quality is measured on a schedule: draft acceptance rate, edit distance, escalation rate, and safety events, reported next to operational outcomes.","A clinical AI governance body reviews agent performance and incidents, and can suspend an agent on evidence."]}];
+var STAGES={"1":{"name":"Stage 1: Census","blurb":"You are at the start. The win is a real census and one chartered, low risk pilot, with clinical leadership, privacy, and compliance in the room from day one."},"2":{"name":"Stage 2: Charter","blurb":"Foundations are forming. Charter the first pattern, fix the data it needs, and run a bounded pilot behind approval gates."},"3":{"name":"Stage 3: Scale","blurb":"You can put agents into production workflows with governance running as routine. Package patterns for reuse across the health system."},"4":{"name":"Stage 4: Transform","blurb":"Agents are part of how the health system runs. Focus on the portfolio: shared data products, shared governance, and measured outcomes reported to leadership."}};
+var ACTIONS={"identify":{"low":["Run a two week use case census: every unit lists its top agent candidates with an owner and a value case, and risk tiers them with clinical leadership, privacy, and compliance at the table.","Pick the first pattern by two filters: measurable value within one quarter, and a risk tier your governance can already support."],"mid":["Turn the census into a portfolio view: value, risk tier, data readiness, and owner for each candidate, reviewed quarterly by the clinical AI governance body.","Write the business case for pattern one with baseline numbers captured before the pilot, so the Prove stage has something to measure against."],"high":["Publish the census as the health system agent inventory, linked to charters and evaluation records, so any oversight question starts from one source of truth."]},"train":{"low":["Brief every affected role before the pilot: what the agent does, what it must never do, and the exact moment a human decides. Collect their hardest cases into the test set.","Give leaders a one page talk track on the agent strategy, its limits, and its governance, tested in a mock mock surveyor conversation."],"mid":["Run role based academies: nurses, physicians, coders, and schedulers each train on their own pattern, with certification tied to pilot access.","Put agent collaboration into performance expectations and coaching, so working with agents is the job, not an experiment beside the job."],"high":["Make training a launch gate: no pattern reaches a new population until that population training and certification are complete and recorded."]},"design":{"low":["Charter before code: owner, allowed actions, approval gates, data allow list, kill switch. No charter, no build. Score the charter with agentlint style checks.","Fix the data for pattern one only: governed data products in BigQuery under Cloud DLP and Healthcare API governance, instead of an organization wide data program first."],"mid":["Standardize the platform pattern: Vertex AI for custom agents, clinician facing agent surfaces for business owned agents, one identity and logging standard for both.","Give every agent its own scoped identity and permissions, and test the kill switch with a live drill each quarter."],"high":["Run design reviews like risk reviews: charter, data lineage, evaluation plan, and rollback plan approved before production promotion."]},"implement":{"low":["Run the first pilot small and watched: one team, one pattern, human approval on every consequential action, full logging from the first interaction.","Set go or no go criteria before the pilot starts: accuracy floor, escalation ceiling, and zero tolerance items named in writing."],"mid":["Package every pilot as a pattern pack for the delivery team: architecture, charter, evaluation results, and runbook, deployable to the next unit.","Add evaluation gates to the release path: no version reaches users without passing the regression and safety suites."],"high":["Operate a pattern factory: intake from the census, charter review, pilot, pack, and scale as one repeatable pipeline with cycle time measured."]},"prove":{"low":["Turn on complete logging now: prompts, retrievals, tool calls, approvals, and outcomes, retained to your records standard and reviewable by a human.","Define the Prove metrics for pattern one: accuracy, escalation rate, human override rate, and the business outcome the pattern exists to move."],"mid":["Report agent performance in the same pack as business results, monthly, with incidents and overrides named and owned.","Schedule independent review: the clinical AI governance body samples real interactions and can suspend an agent on evidence."],"high":["Produce oversight evidence as a byproduct: charter, lineage, evaluation history, and decision logs exportable for reviewers without a special project."]}};
+var ROADMAPS={"early":["Days 1 to 30, Identify and charter: finish the census, tier the risk, pick one pattern (clinical documentation or prior authorization are the usual first wins), sign its charter with clinical leadership, privacy, and compliance.","Days 31 to 60, Design and train: build the governed data products in BigQuery under Cloud DLP and Healthcare API governance, stand up the proof of concept on Vertex AI with evaluation gates, train the pilot cohort.","Days 61 to 90, Implement and prove: bounded pilot behind approval gates with full logging, then the pattern pack handoff and a Prove report with baseline versus pilot outcomes."],"scale":["Quarter 1, Scale the proven patterns: promote two chartered patterns to production, extend the pattern pack library, and put agent metrics into the monthly business review.","Quarter 2, Widen the portfolio: onboard the next unit from the census, standardize the platform pattern, automate evaluation gates in the release path.","Quarter 3, Prove at portfolio level: reviewer ready evidence export, portfolio level risk reporting, and a leadership outcomes review."],"transform":["Operate the pattern factory as a product line: census intake, charter review, pilot, pack, and scale with cycle time and outcomes measured per pattern.","Extend to proactive and cross enterprise patterns: the same governance spine, wider reach only where Prove metrics stay green.","Feed field evidence back into the roadmap quarterly: overrides, incidents, and reviewer feedback become the next census priorities."]};
+var GOV_CHECKS=[{"label":"Complete interaction logging, retained to the records standard","dim":"prove","idx":0},{"label":"Scheduled quality and safety measurement with outcome metrics","dim":"prove","idx":1},{"label":"Clinical governance review with power to suspend an agent","dim":"prove","idx":2},{"label":"Written agent charter before build: owner, gates, data allow list, kill switch","dim":"design","idx":1}];
+var GOV_STATIC_CHECKS=["Charter on file for every production agent, owner named and current","Incident path tested: a named human can suspend any agent within one hour","Records retention verified for agent logs against the organization schedule"];
+var HANDOFF={"title":"Delivery engineering handoff pack","items":["Pattern architecture: services, data flows, and integration points, as deployed in the pilot","The signed agent charter: owner, allowed actions, approval gates, data allow list, kill switch","Evaluation evidence: regression and safety results, accuracy and escalation baselines","Runbook: monitoring, incident response, rollback, and the named on call owner"],"lowProve":"Logging and evidence plan: close the Prove gaps above first, because the delivery team cannot scale what the organization cannot audit.","lowDesign":"Data remediation list: the BigQuery data products and Cloud DLP and Healthcare API governance controls the pattern still needs before scale."};
+var PLAN_TITLE="HEALTHCARE AGENTIC TRANSFORMATION ROADMAP";
+var PLAN_FOOTER="Generated by the Healthcare Agentic Transformation Accelerator (Identify to Prove arc) by Greg Lucas. Independent project, not affiliated with Google.";
+function dimensionScore(values){var raw=0,i;for(i=0;i<values.length;i++)raw+=values[i];return Math.round((raw/(values.length*4))*100);}
+function stageFor(o){if(o>=75)return 4;if(o>=50)return 3;if(o>=25)return 2;return 1;}
+function bandFor(s){if(s<40)return "low";if(s<70)return "mid";return "high";}
+function statusFor(v){if(v>=3)return{cls:"ok",text:"In place"};if(v>=1)return{cls:"partial",text:"Partial"};return{cls:"missing",text:"Missing"};}
+function computeScores(answers){var dims={},total=0,i,d;for(i=0;i<DIMENSIONS.length;i++){d=DIMENSIONS[i];dims[d.id]=dimensionScore(answers[d.id]);total+=dims[d.id];}var overall=Math.round(total/DIMENSIONS.length);return{dims:dims,overall:overall,stage:stageFor(overall)};}
+function buildPlan(answers,scores){var sorted=DIMENSIONS.slice().sort(function(a,b){return scores.dims[a.id]-scores.dims[b.id];});var priority=[],i,d,acts,j;for(i=0;i<3;i++){d=sorted[i];acts=ACTIONS[d.id][bandFor(scores.dims[d.id])];for(j=0;j<acts.length;j++)priority.push(d.name+": "+acts[j]);}
+var roadmap;if(scores.stage<=2)roadmap=ROADMAPS.early;else if(scores.stage===3)roadmap=ROADMAPS.scale;else roadmap=ROADMAPS.transform;
+var govOut=GOV_CHECKS.map(function(c){var v=answers[c.dim][c.idx];var s=statusFor(v);return{label:c.label,cls:s.cls,text:s.text};});
+GOV_STATIC_CHECKS.forEach(function(label){govOut.push({label:label,cls:"",text:"Verify before launch"});});
+var fde=HANDOFF.items.slice();if(scores.dims.prove<50)fde.unshift(HANDOFF.lowProve);if(scores.dims.design<50)fde.push(HANDOFF.lowDesign);
+return{priority:priority,roadmap:roadmap,governance:govOut,fde:fde};}
+function planAsText(answers,scores,plan){var lines=[];lines.push(PLAN_TITLE);lines.push("Overall score: "+scores.overall+"/100");lines.push("Maturity stage: "+STAGES[scores.stage].name);lines.push("");lines.push("Stage scores:");DIMENSIONS.forEach(function(d){lines.push("- "+d.name+": "+scores.dims[d.id]+"/100");});lines.push("");lines.push("Do first:");plan.priority.forEach(function(s){lines.push("- "+s);});lines.push("");lines.push("Staged roadmap:");plan.roadmap.forEach(function(s){lines.push("- "+s);});lines.push("");lines.push("Governance checks:");plan.governance.forEach(function(c){lines.push("- ["+c.text+"] "+c.label);});lines.push("");lines.push(HANDOFF.title+":");plan.fde.forEach(function(s){lines.push("- "+s);});lines.push("");lines.push(PLAN_FOOTER);return lines.join("\n");}
+if(typeof document!=="undefined"){
+var questionsEl=document.getElementById("questions");
+DIMENSIONS.forEach(function(d){var fs=document.createElement("fieldset");fs.id="fs-"+d.id;var legend=document.createElement("legend");legend.textContent=d.name+" \u00b7 "+d.focus;fs.appendChild(legend);d.questions.forEach(function(q,qi){var div=document.createElement("div");div.className="q";var p=document.createElement("p");p.textContent=q;div.appendChild(p);var opts=document.createElement("div");opts.className="opts";SCALE.forEach(function(s){var label=document.createElement("label");var input=document.createElement("input");input.type="radio";input.name=d.id+"-"+qi;input.value=s.v;label.appendChild(input);label.appendChild(document.createTextNode(s.label));opts.appendChild(label);});div.appendChild(opts);fs.appendChild(div);});questionsEl.appendChild(fs);});
+var lastReport=null;
+document.getElementById("assessment").addEventListener("submit",function(ev){ev.preventDefault();var answers={},missing=[];DIMENSIONS.forEach(function(d){answers[d.id]=[];d.questions.forEach(function(q,qi){var sel=document.querySelector('input[name="'+d.id+"-"+qi+'"]:checked');document.getElementById("fs-"+d.id).classList.remove("missing");if(!sel){missing.push(d.id);answers[d.id].push(0);}else answers[d.id].push(parseInt(sel.value,10));});});
+var err=document.getElementById("formError");if(missing.length){var uniq=missing.filter(function(v,i){return missing.indexOf(v)===i;});uniq.forEach(function(id){document.getElementById("fs-"+id).classList.add("missing");});err.style.display="block";err.textContent="Please answer every question. Missing answers are highlighted above.";return;}err.style.display="none";
+var scores=computeScores(answers);var plan=buildPlan(answers,scores);lastReport=planAsText(answers,scores,plan);
+document.getElementById("overallScore").textContent=scores.overall;document.getElementById("stageBadge").textContent=STAGES[scores.stage].name;document.getElementById("stageBlurb").textContent=STAGES[scores.stage].blurb;
+var bars=document.getElementById("dimBars");bars.innerHTML="";DIMENSIONS.forEach(function(d){var row=document.createElement("div");row.className="bar-row";var name=document.createElement("span");name.textContent=d.name;var bar=document.createElement("div");bar.className="bar";var fill=document.createElement("i");fill.style.width=scores.dims[d.id]+"%";bar.appendChild(fill);var val=document.createElement("span");val.textContent=scores.dims[d.id];row.appendChild(name);row.appendChild(bar);row.appendChild(val);bars.appendChild(row);});
+function fillList(id,items,isGov){var ul=document.getElementById(id);ul.innerHTML="";items.forEach(function(item){var li=document.createElement("li");if(isGov){var st=document.createElement("span");st.className="status "+item.cls;st.textContent=item.text+": ";li.appendChild(st);li.appendChild(document.createTextNode(item.label));}else{li.textContent=item;}ul.appendChild(li);});}
+fillList("priorityPlan",plan.priority,false);fillList("roadmap",plan.roadmap,false);fillList("govChecks",plan.governance,true);fillList("fdePack",plan.fde,false);
+var results=document.getElementById("results");results.style.display="block";document.getElementById("copyNote").textContent="";results.scrollIntoView({behavior:"smooth"});});
+document.getElementById("copyPlan").addEventListener("click",function(){var note=document.getElementById("copyNote");if(!lastReport)return;function done(){note.textContent="Roadmap copied. Paste it into your notes or share it with your team.";}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(lastReport).then(done,function(){note.textContent="Copy was blocked by the browser. Select the report on screen instead.";});}else{note.textContent="Clipboard is not available in this browser. Select the report on screen instead.";}});
+document.getElementById("retake").addEventListener("click",function(){document.getElementById("assessment").reset();document.getElementById("results").style.display="none";window.scrollTo({top:0,behavior:"smooth"});});
+}
+</script>
+</body>
+</html>
